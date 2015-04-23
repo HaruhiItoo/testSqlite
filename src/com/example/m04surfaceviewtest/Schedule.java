@@ -43,6 +43,10 @@ public class Schedule {
 		//...
 	}
 
+	public String getDate1() {		
+		return date1;
+	}
+	
 	public static String toDateString(int y, int m, int d) {
 		// format: YYYY/MM/DD
 		StringBuffer sb = new StringBuffer();
@@ -143,6 +147,8 @@ public class Schedule {
 		Date aDate= new Date();		
 		return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(aDate);		
 	}
+
+	
 
 	
 }
