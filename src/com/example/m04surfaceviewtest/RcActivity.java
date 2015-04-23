@@ -125,9 +125,10 @@ public class RcActivity extends Activity {
 				
 				if(alSch.get(position).isPassed())
 				{
-					tvDate.setTextColor(getResources().getColor(R.color.passedschtext));
-					tvTime.setTextColor(getResources().getColor(R.color.passedschtext));
-					ll.setBackgroundColor(getResources().getColor(R.color.passedschgb));
+					//ToDo: add R to set colors.
+//					tvDate.setTextColor(getResources().getColor(R.color.passedschtext));
+//					tvTime.setTextColor(getResources().getColor(R.color.passedschtext));
+//					ll.setBackgroundColor(getResources().getColor(R.color.passedschgb));
 				}
 				
 				return null;
