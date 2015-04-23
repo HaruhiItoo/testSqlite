@@ -1,14 +1,11 @@
 package com.example.m04surfaceviewtest;
-
 import java.util.List;
-
-import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.content.SharedPreferences.Editor;
-import android.database.Cursor;
+import android.database.*;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
+import android.app.Activity;
 
 public class DBUtil {
 	static SQLiteDatabase sld;
@@ -105,11 +102,31 @@ public class DBUtil {
 			return false;
 		}finally
 		{
+			// Note!! To close cursor and DB.
 			cursor.close();
 			sld.close();
 		}
 		
 		return true;
+	}
+	
+	// Line:14
+	public static void deleteType(Activity father, String s)
+	{
+		try
+		{
+			sld = SQLiteDatabase.openDatabase(MY_DB_PATH, null, SQLiteDatabase.OPEN_READWRITE);
+			String sql = "delete from type where tname='" + s + "'";
+			sld.execSQL(sql);
+			Toast.makeText(father, "Success to delete type.", Toast.LENGTH_SHORT).show();
+		}catch (Exception e)
+		{
+			Toast.makeText(father, "Faile to delete type: " + e.toString(), Toast.LENGTH_SHORT).show();
+		}finally
+		{
+			sld.close();
+		}
+		
 	}
 	
 	public static int getSNFromPrefs(Activity father)
