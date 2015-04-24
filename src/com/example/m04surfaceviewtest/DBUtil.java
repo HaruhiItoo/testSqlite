@@ -1,36 +1,45 @@
 package com.example.m04surfaceviewtest;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import android.content.*;
 import android.content.SharedPreferences.Editor;
 import android.database.*;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 import android.app.Activity;
 
 public class DBUtil {
 	static SQLiteDatabase sld;
-	static String MY_DB_PATH = "/data/data/com.example.m04surfaceviewtest/myDb"; 
+	//static String MY_DB_PATH = "/data/data/com.example.m04surfaceviewtest/myDb";
+	static String MY_DB_PATH = Environment.getExternalStorageDirectory().getAbsolutePath()+"/com.example.m04surfaceviewtest/myDb";
 	
-	private static List<String> alType;
+	public static List<String> alType = new ArrayList<String>();	
+	public static List<Schedule> alSch = new ArrayList<Schedule>();		
+	public static Map<Integer, Boolean> alIsSelected = new HashMap<Integer, Boolean>();
 	
-	public static void loadType(Activity father)
+	//Ln:7
+	public static void loadType(RcActivity father)
 	{
 		try
 		{
 			sld = SQLiteDatabase.openDatabase(MY_DB_PATH, null, 
 					SQLiteDatabase.OPEN_READWRITE | SQLiteDatabase.CREATE_IF_NECESSARY);
-			String sql = "create table if not exists type(tno integer primary key,  tname varchar2(20); ";
+			String sql = "create table if not exists type(tno integer primary key,  tname varchar2(20)); ";
 			sld.execSQL(sql);
 			Cursor cursor = sld.query("type", null, null, null, null, null, "tno");
 			int count = cursor.getCount();
 			if(count == 0)
 			{
-				//for(int i=0; i<father.default)
-				for(int i =0; i< 5; i++)
+				for(int i=0; i<father.defaultType.length; i++)
 				{
 					sql = "insert into type values(" + i + ",'" 
-							//+ father.defaultType[i]
-							+ "type01"
+							+ father.defaultType[i]							
 							+ "')";
 					sld.execSQL(sql);
 				}
@@ -56,7 +65,7 @@ public class DBUtil {
 		
 	}
 	
-	public static boolean insertType(Activity father, String newType)
+	public static boolean insertType(RcActivity father, String newType)
 	{
 		Cursor cursor=null;
 		boolean duplicate = false;
@@ -111,7 +120,7 @@ public class DBUtil {
 	}
 	
 	// Line:14
-	public static void deleteType(Activity father, String s)
+	public static void deleteType(RcActivity father, String s)
 	{
 		try
 		{
@@ -127,6 +136,59 @@ public class DBUtil {
 			sld.close();
 		}
 		
+	}
+	
+	//Ln:19
+	public static void loadSchedule(RcActivity father)
+	{
+		try
+		{		
+			// Create a folder.
+			File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/com.example.m04surfaceviewtest");
+			if(!f.exists())
+			{
+				f.mkdir();
+			}
+			
+			sld=SQLiteDatabase.openDatabase(MY_DB_PATH, null, 
+					SQLiteDatabase.OPEN_READWRITE | SQLiteDatabase.CREATE_IF_NECESSARY);
+			String sql = "create table if not exists schedule" 
+					+"(sn integer primary key, date1 char(10), time1 char(5),"
+					+" date2 char(10), time2 char(5), title varchar2(40),"
+					+" note varchar2(120), type varchar2(20)," 
+					+" timeset boolean, alarmset boolean)";
+			sld.execSQL(sql);
+			
+			// Order by time.
+			Cursor cursor =sld.query("schedule", null, null, null, null, null, 
+					"date1 desc,time1 desc");
+			while(cursor.moveToNext())
+			{
+				int sn = cursor.getInt(0);
+				String date1=cursor.getString(1);
+				String time1=cursor.getString(2);
+				String date2=cursor.getString(3);
+				String time2=cursor.getString(4);
+				String title=cursor.getString(5);
+				String note=cursor.getString(6);
+				String type=cursor.getString(7);
+				String timeSet=cursor.getString(8);
+				String alarmSet=cursor.getString(9);
+				Schedule schTemp=new Schedule(sn, date1, time1, date2, time2, title, 
+						note, type, timeSet, alarmSet);
+				alSch.add(schTemp);
+				Log.d("schdata", ""+cursor.getPosition()+":sn="+sn+":"
+				+date1+","+time1+","+date2+","+timeSet);
+			}
+			
+			sld.close();
+			cursor.close();
+			
+		}catch(Exception e)
+		{
+			Toast.makeText(father, "Fail to load schedule: "+e.toString(), 
+					Toast.LENGTH_LONG).show();
+		}
 	}
 	
 	public static int getSNFromPrefs(Activity father)

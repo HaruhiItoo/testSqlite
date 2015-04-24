@@ -6,6 +6,12 @@
     <string name="hello_world">Hello world!</string>
      -->
      
-     <string name="hello_world">Hello world! OH~~~~ Ya~~~</string>
-
+    <string name="hello_world">Hello world! My Schedule</string>
+    
+    
+    <color name="passedschtext">#999999</color>    
+    <color name="passedschgb">#ffc1cc</color>
+    <color name="selectedsch">#ace5ee</color>
+    <string name="padding">paddingpaddingpaddingpadding</string>
+	
 </resources>

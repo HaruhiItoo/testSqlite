@@ -13,7 +13,7 @@ public class MainActivity extends Activity {
 		//setContentView(R.layout.activity_main);
 		
 		// Test2:
-		setContentView(new MySurfaceView(this));
+		//setContentView(new MySurfaceView(this));
 		
 		
 		// Test1:

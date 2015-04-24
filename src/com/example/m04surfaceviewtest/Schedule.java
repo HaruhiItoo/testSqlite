@@ -40,13 +40,30 @@ public class Schedule {
 	public Schedule(int sn, String date1, String time1, String date2, String time2, 
 			String title, String note, String type, String timeSet, String alarmSet)
 	{
-		//...
+		this.sn=sn;
+		this.date1=date1;
+		this.time1=time1;
+		this.date2=date2;
+		this.time2=time2;
+		this.title=title;
+		this.note=note;
+		this.type=type;
+		this.timeSet=!(timeSet==null || timeSet=="N");
+		this.alarmSet=!(alarmSet==null || alarmSet=="N");
 	}
 
 	public String getDate1() {		
 		return date1;
 	}
 	
+	public boolean getAlarmSet() {		
+		return alarmSet;
+	}
+	
+	public String getTitle() {
+		return title;
+	}
+
 	public static String toDateString(int y, int m, int d) {
 		// format: YYYY/MM/DD
 		StringBuffer sb = new StringBuffer();
@@ -140,7 +157,7 @@ public class Schedule {
 	
 	private String getNowDateString() {
 		Date aDate= new Date();		
-		return new SimpleDateFormat("YYYY/MM/dd", Locale.getDefault()).format(aDate);		
+		return new SimpleDateFormat("yyyy/MM/dd", Locale.getDefault()).format(aDate);		
 	}
 	
 	private String getNowTimeString() {
@@ -148,7 +165,6 @@ public class Schedule {
 		return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(aDate);		
 	}
 
-	
 
 	
 }

@@ -19,7 +19,7 @@ import android.view.WindowManager;
 public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback{
 
 
-	private Activity mActivity;
+	private RcActivity mActivity;
 	private Paint paint;
 	private int currentAlpha = 0;
 	private int screenWidth;
@@ -30,9 +30,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	private List<Bitmap> logos;
 	private int sleepSpan;
 
-	//public MySurfaceView(Context context) {
-		//super(context);
-	public MySurfaceView(Activity activity){
+
+	public MySurfaceView(RcActivity activity){
 		super(activity);	
 	
 		mActivity = activity;	
@@ -124,8 +123,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 					} // End: for-loop
 				}// End: for bitmaps
 				
-				// ???
-				//mActivity.hd.SendEmptyMessage(0);
+				// Send message to RcActivity. It will go to Main UI.
+				mActivity.hd.sendEmptyMessage(0);
 				
 			}// End: method "run".
 		}.start();
