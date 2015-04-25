@@ -13,5 +13,6 @@
     <color name="passedschgb">#ffc1cc</color>
     <color name="selectedsch">#ace5ee</color>
     <string name="padding">paddingpaddingpaddingpadding</string>
+    <string name="curSchedules">Current Schedules</string>
 	
 </resources>

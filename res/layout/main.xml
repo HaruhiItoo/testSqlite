@@ -9,11 +9,36 @@
         android:layout_height="wrap_content"
         android:text="@string/padding" />
     
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/ibAddSch"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/addsch" />
+
+        <ImageButton
+            android:id="@+id/ibDelSch"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/deletesch" />
+
+        <ImageButton
+            android:id="@+id/ibEditSch"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/editsch" />
+    </LinearLayout>
+        
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
-    
+        android:text="@string/curSchedules" />
+
+
     <ListView
         android:id="@+id/lv"
         android:layout_width="match_parent"
