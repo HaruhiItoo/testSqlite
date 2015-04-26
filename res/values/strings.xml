@@ -12,7 +12,21 @@
     <color name="passedschtext">#999999</color>    
     <color name="passedschgb">#ffc1cc</color>
     <color name="selectedsch">#ace5ee</color>
+    <color name="black">#ffffff</color>
+    
     <string name="padding">paddingpaddingpaddingpadding</string>
     <string name="curSchedules">Current Schedules</string>
+    <string name="newsch">New Schedule</string>
+    <string name="lbType">Type:</string>
+    <string name="bTypeManager">類型管理</string>
+    <string name="lbTitle">"Title: "</string>
+    <string name="lbNote">"Note: "</string>
+    <string name="lbDate">"Date: "</string>
+    <string name="lbTime">"Time: "</string>
+    <string name="bSetDate">設定日期</string>
+    <string name="lbAlarm">"Alarm: "</string>
+    <string name="bAlarm">Set Alarm</string>
+    <string name="bOk">OK</string>
+    <string name="bCancel">Cancel</string>
 	
 </resources>

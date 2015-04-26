@@ -63,6 +63,28 @@ public class Schedule {
 	public String getTitle() {
 		return title;
 	}
+	
+	public String getNote() {
+		return note;
+	}
+
+	public String getTime1() {
+		return time1;
+	}
+
+	public boolean getTimeSet() {		
+		return timeSet;
+	}
+
+	public String getDate2() {
+		return date2;
+	}
+
+	public String getTime2() {
+		return time2;
+	}
+
+
 
 	public static String toDateString(int y, int m, int d) {
 		// format: YYYY/MM/DD
@@ -165,6 +187,6 @@ public class Schedule {
 		return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(aDate);		
 	}
 
-
+	
 	
 }

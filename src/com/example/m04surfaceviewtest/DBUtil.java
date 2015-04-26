@@ -21,7 +21,8 @@ public class DBUtil {
 	
 	public static List<String> alType = new ArrayList<String>();	
 	public static List<Schedule> alSch = new ArrayList<Schedule>();		
-	public static Map<Integer, Boolean> alIsSelected = new HashMap<Integer, Boolean>();
+	//public static Map<Integer, Boolean> alIsSelected = new HashMap<Integer, Boolean>();
+	public static List<Boolean> alIsSelected = new ArrayList<Boolean>();
 	
 	//Ln:7
 	public static void loadType(RcActivity father)

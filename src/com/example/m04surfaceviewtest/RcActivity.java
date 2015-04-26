@@ -4,13 +4,16 @@ package com.example.m04surfaceviewtest;
 import static com.example.m04surfaceviewtest.DBUtil.*;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.example.m04surfaceviewtest.Constant.Layout;
+import com.example.m04surfaceviewtest.Constant.WhoCall;
 
 import android.app.Activity;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.os.BaseBundle;
 import android.os.Bundle;
@@ -24,14 +27,26 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 public class RcActivity extends Activity {
 	
+	private ImageButton bNew;
+	private ImageButton bCheck;
+	private ImageButton bEdit;
+	private ImageButton bDel;
+	private ImageButton bDelAll;
 	private Layout curr;	
+	private WhoCall wcNewOrEdit;
+	private int sel = 0;
+	private Schedule schTemp;
 
 	public String[] defaultType = {"Private", "Work", "ToBuy"};
 	
@@ -48,7 +63,8 @@ public class RcActivity extends Activity {
 			}
 		}
 		
-	};
+	};	
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {		
@@ -69,38 +85,40 @@ public class RcActivity extends Activity {
 		
 	}
 	
-	protected void gotoMain() {		
+
+	//Ln:27
+	public void gotoMain() {
 		
 		getWindow().setFlags(
 				WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, 
 				WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 		setContentView(R.layout.main);		
 		curr=Layout.MAIN;
+		sel=0;
 		
-		int sel = 0;				
-//		CheckBox bCheck = (CheckBox)findViewById(R.id.check);				
-		//final Map<Integer, Boolean> alIsSelected = new HashMap<Integer, Boolean>();
+		//variabes:
+		bNew = (ImageButton)findViewById(R.id.ibAddSch);
+		bCheck = (ImageButton)findViewById(R.id.ibChkSch);
+		bEdit =(ImageButton)findViewById(R.id.ibEditSch);
+		bDel =(ImageButton)findViewById(R.id.ibDelSch);
+		bDelAll =(ImageButton)findViewById(R.id.ibDelAllSch);
 		
 		// Ln9: UI settings.
-//		bCheck.setEnabled(false);
-//		bEdit.setEnabled(false);
-//		bDel.setEnabled(false);
+		bCheck.setEnabled(false);
+		bEdit.setEnabled(false);
+		bDel.setEnabled(false);
 		alSch.clear();
 		
 		// Read data from DB. 		
 		loadSchedule(this);
 		loadType(this);
 		
-
-//		bCheck.setOnClickListener(new View.OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View v) {	
-//				// go to searching UI.
-//				showDialog(Constant.DIALOG_CHECK);
-//				
-//			}
-//		});			
+		bDelAll.setEnabled((alSch.size() != 0));
+		alIsSelected.clear();
+		for(int i=0;i<alSch.size();i++)
+		{
+			alIsSelected.add(false);
+		}
 		
 		ListView lv = (ListView)findViewById(R.id.lv);
 		lv.setAdapter(new BaseAdapter() {
@@ -190,22 +208,121 @@ public class RcActivity extends Activity {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				Schedule schTemp;
-//				bCheck.setEnabled(true);
-//				bEdit.setEnabled(true);
-//				bDel.setEnabled(true);
+					int position, long id) {				
+				bCheck.setEnabled(true);
+				bEdit.setEnabled(true);
+				bDel.setEnabled(true);
 				schTemp=alSch.get(position);
 				// Clear all selection, then set the selected item to true.
 				for(int i=0; i<alIsSelected.size(); i++)
 				{
-					alIsSelected.put(i, false);
+					alIsSelected.set(i, false);
 				}
 				
-				alIsSelected.put(position, true);
+				alIsSelected.set(position, true);
 			}
 			
 		});		
+		
+		//Ln40:
+		bNew.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Calendar c =Calendar.getInstance();
+				int t1=c.get(Calendar.YEAR);
+				int t2=c.get(Calendar.MONTH)+1;
+				int t3=c.get(Calendar.DAY_OF_MONTH);
+				schTemp=new Schedule(t1, t2, t3);
+				wcNewOrEdit=WhoCall.NEW;
+				gotoSetting();
+			}
+		});
+		
+		bEdit.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				wcNewOrEdit=WhoCall.EDIT;
+				gotoSetting();
+				
+			}
+		});
+		
+		bDel.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				//showDialog(DIALOG_SCH_DEL_CONFIRM);
+				
+			}
+		});
+		
+		
 	}
 
+	//Ln:28
+	public void gotoSetting()
+	{
+		setContentView(R.layout.newschedule);
+		curr=Layout.SETTING;
+		
+		TextView tvTitle=(TextView)findViewById(R.id.tvnewscheduleTitle);
+		if(wcNewOrEdit==WhoCall.NEW)
+		{
+			tvTitle.setText("New Schedule");			
+		}
+		else if (wcNewOrEdit==WhoCall.EDIT)
+		{
+			tvTitle.setText("Modify Schedule");
+		}
+		
+		// variables...
+		EditText etTitle = (EditText)findViewById(R.id.etTitle);
+		EditText etNote = (EditText)findViewById(R.id.etNote);
+		TextView tvDate = (TextView)findViewById(R.id.tvDate);
+		TextView tvTime = (TextView)findViewById(R.id.tvTime);
+		TextView tvAlarm = (TextView)findViewById(R.id.tvAlarm);
+				
+		etTitle.setText(schTemp.getTitle());
+		etNote.setText(schTemp.getNote());
+		tvDate.setText(schTemp.getDate1());
+		tvTime.setText(schTemp.getTimeSet()?schTemp.getTime1():"no time");
+		tvAlarm.setText(schTemp.getAlarmSet()?schTemp.getDate2()+"    "+schTemp.getTime2():"no alarm");
+		
+		Spinner spType = (Spinner)findViewById(R.id.spType);
+		//Ln16:
+		spType.setAdapter(new BaseAdapter() {
+			@Override
+			public int getCount() {
+				return alType.size();
+			}
+			
+			@Override
+			public Object getItem(int position) {				
+				return alType.get(position);
+			}
+			
+			@Override
+			public long getItemId(int position) {				
+				return 0;
+			}
+			
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {				
+				LinearLayout ll = new LinearLayout(RcActivity.this);
+				ll.setOrientation(LinearLayout.HORIZONTAL);
+				TextView tv = new TextView(RcActivity.this);
+				tv.setText(alType.get(position));
+				tv.setTextSize(17);
+				tv.setTextColor(getResources().getColor(R.color.black));
+				return tv;
+			}			
+		});
+		
+		spType.setSelection(sel);
+		
+		// button listener
+	}
+	
 }
