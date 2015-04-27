@@ -3,7 +3,7 @@ package com.example.m04surfaceviewtest;
 import java.util.Calendar;
 
 public class Constant {
-	final static int DIALOG_SET_SEARCH_RANGE=1;
+	public final static int DIALOG_SET_SEARCH_RANGE=1;
 	final static int DIALOG_SET_DATETIME=2;
 	final static int DIALOG_SCH_DEL_CONFIRM=3;
 	final static int DIALOG_CHECK=4;

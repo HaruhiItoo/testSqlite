@@ -192,10 +192,34 @@ public class DBUtil {
 		}
 	}
 	
+	//Ln:22
+	public static void insertSchedule(RcActivity father)
+	{
+		try
+		{
+			sld=SQLiteDatabase.openDatabase(MY_DB_PATH, null, SQLiteDatabase.OPEN_READWRITE);
+			String sql =father.schTemp.toInsertSql(father);
+			sld.execSQL(sql);
+			sld.close();
+		}catch(Exception e)
+		{
+			Toast.makeText(father, 
+					"Fail to insert schedule: " + e.toString(), Toast.LENGTH_LONG).show();
+		}
+		
+	}
+	
+	//Ln:25
+	public static void updateSchedule(RcActivity father)
+	{
+		
+	}
+	
 	public static int getSNFromPrefs(Activity father)
 	{
 		SharedPreferences sp = father.getSharedPreferences("SN", Context.MODE_PRIVATE);
-		int sn = sp.getInt("sn", 0);
+		// Get SN from 2 because there have been a schedule in DB(test).
+		int sn = sp.getInt("sn", 2);
 		
 		Editor editor = sp.edit();
 		editor.putInt("sn", sn+1);

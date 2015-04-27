@@ -1,5 +1,7 @@
 package com.example.m04surfaceviewtest;
 
+import static com.example.m04surfaceviewtest.DBUtil.*;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,7 +13,6 @@ import android.util.Log;
 public class Schedule {
 	// Schedule primary key
 	private int sn;
-	// Have alarm?
 	private boolean alarmSet;
 	private String date1;
 	private String time1;
@@ -48,8 +49,9 @@ public class Schedule {
 		this.title=title;
 		this.note=note;
 		this.type=type;
-		this.timeSet=!(timeSet==null || timeSet=="N");
-		this.alarmSet=!(alarmSet==null || alarmSet=="N");
+		// 0 (false) and 1 (true).
+		this.timeSet=!(timeSet==null || timeSet=="0");
+		this.alarmSet=!(alarmSet==null || alarmSet=="0");
 	}
 
 	//
@@ -86,16 +88,34 @@ public class Schedule {
 	public String getTime2() {
 		return time2;
 	}
+	
+	public String getType() {
+		return type;
+	}
 
 	//
 	// Setters
 	//
+	public void setDate1(String date1)
+	{
+		this.date1=date1;
+		this.timeSet=true;
+	}
+	public void setDate2(String date2)
+	{
+		this.date2=date2;
+		this.alarmSet=true;
+	}
 	public void setTitle(String title) {
 		this.title=title;		
 	}
 
 	public void setNote(String note) {
 		this.note=note;		
+	}
+
+	public void setType(String type) {
+		this.type=type;		
 	}
 
 
@@ -167,13 +187,33 @@ public class Schedule {
 		return false;
 	}
 
-	public String toInsertSql(Activity father)
+	public String toInsertSql(RcActivity father)
 	{
+		Schedule sch = father.schTemp;
+		sn=getSNFromPrefs(father);
 		StringBuffer sb = new StringBuffer();
-		sb.append("insert into schedule values('')");
-		//ToDo:
-		//sn=getSNFromPrefs(father);
-		//....
+		sb.append("insert into schedule values(");	
+		sb.append(sn);
+		sb.append(",'");
+		sb.append(sch.date1);
+		sb.append("','");
+		sb.append(sch.time1);
+		sb.append("','");
+		sb.append(sch.date2);
+		sb.append("','");
+		sb.append(sch.time2);
+		sb.append("','");
+		sb.append(sch.title);
+		sb.append("','");
+		sb.append(sch.note);
+		sb.append("','");
+		sb.append(sch.type);
+		sb.append("',");
+		sb.append(sch.timeSet?"1":"0");
+		sb.append(",");
+		sb.append(sch.alarmSet?"1":"0");
+		sb.append(")");
+		
 		Log.d("toInsertSql", sb.toString());
 		return sb.toString();
 	}
@@ -199,6 +239,7 @@ public class Schedule {
 		Date aDate= new Date();		
 		return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(aDate);		
 	}
+
 
 
 	

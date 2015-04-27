@@ -82,7 +82,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 					currentX = screenWidth/2 - bm.getWidth()/2;
 					currentY = screenHeight/2 - bm.getHeight()/2;
 					// Change alpha.
-					for(int i=255; i>-10; i-=10)
+					//for(int i=255; i>-10; i-=10)
+					for(int i=255; i>-20; i-=20)
 					{
 						currentAlpha = i;
 						if(currentAlpha < 0)
@@ -115,7 +116,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 							if(i==255)
 							{
 								// At beginning drawing picture, wait 1s.  
-								Thread.sleep(1000);
+								//Thread.sleep(1000);
+								Thread.sleep(700);
 							}
 							Thread.sleep(sleepSpan);
 						}catch(Exception e)

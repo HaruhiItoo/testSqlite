@@ -2,18 +2,17 @@ package com.example.m04surfaceviewtest;
 
 // Note!! To impoart DBUtil's static methods.
 import static com.example.m04surfaceviewtest.DBUtil.*;
+import static com.example.m04surfaceviewtest.Constant.*;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.example.m04surfaceviewtest.Constant.Layout;
-import com.example.m04surfaceviewtest.Constant.WhoCall;
-import com.example.m04surfaceviewtest.R.layout;
-
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.os.BaseBundle;
@@ -29,6 +28,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -39,8 +39,8 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class RcActivity extends Activity {
-	
+public class RcActivity extends Activity {	
+
 	//Main UI
 	private ImageButton bNew;
 	private ImageButton bCheck;
@@ -50,18 +50,25 @@ public class RcActivity extends Activity {
 	
 	//Setting UI
 	private EditText etTitle;
-	private EditText etNote;
+	private EditText etNote;	
 	private Spinner spType;
+	private TextView tvDate;
+	private TextView tvTime;
+	private TextView tvAlarm;
 	
 	//Type management UI
 	private EditText etNew;
 	
 	private Layout curr;	
 	private WhoCall wcNewOrEdit;
+	private WhoCall wcSetTimeOrAlarm;
+	private Dialog dialogSetRange;
 	private int sel = 0;
-	private Schedule schTemp;
+	
+	public Schedule schTemp;
 
 	public String[] defaultType = {"Private", "Work", "ToBuy"};
+	
 	
 	// Override the method of handling messages.
 	public Handler hd = new Handler(){
@@ -82,10 +89,10 @@ public class RcActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);	
+		
 		goToWelcomeView();
 	}
-
 
 	private void goToWelcomeView() {
 		MySurfaceView mview = new MySurfaceView(this);
@@ -98,7 +105,6 @@ public class RcActivity extends Activity {
 		
 	}
 	
-
 	//Ln:27
 	public void gotoMain() {
 		
@@ -161,13 +167,13 @@ public class RcActivity extends Activity {
 				LinearLayout llDown = new LinearLayout(RcActivity.this);
 				llDown.setOrientation(LinearLayout.HORIZONTAL);
 				
-				TextView tvDate = new TextView(RcActivity.this);				
-				tvDate.setText(alSch.get(position).getDate1()+"    ");
-				tvDate.setTextSize(17);
-				tvDate.setTextColor(Color.parseColor("#129666"));
-				llUp.addView(tvDate);
+				TextView atvDate = new TextView(RcActivity.this);				
+				atvDate.setText(alSch.get(position).getDate1()+"    ");
+				atvDate.setTextSize(17);
+				atvDate.setTextColor(Color.parseColor("#129666"));
+				llUp.addView(atvDate);
 				
-				TextView tvTime = new TextView(RcActivity.this);
+				tvTime = new TextView(RcActivity.this);
 				tvTime.setText(alSch.get(position).timeForListView());
 				tvTime.setTextSize(17);
 				tvTime.setTextColor(Color.parseColor("#925301"));
@@ -176,7 +182,7 @@ public class RcActivity extends Activity {
 				// Customize color for out-of-date schedule.
 				if(alSch.get(position).isPassed())
 				{				
-					tvDate.setTextColor(getResources().getColor(R.color.passedschtext));
+					atvDate.setTextColor(getResources().getColor(R.color.passedschtext));
 					tvTime.setTextColor(getResources().getColor(R.color.passedschtext));
 					ll.setBackgroundColor(getResources().getColor(R.color.passedschgb));
 				}
@@ -293,9 +299,9 @@ public class RcActivity extends Activity {
 		// variables...
 		etTitle = (EditText)findViewById(R.id.etTitle);
 		etNote = (EditText)findViewById(R.id.etNote);
-		TextView tvDate = (TextView)findViewById(R.id.tvDate);
-		TextView tvTime = (TextView)findViewById(R.id.tvTime);
-		TextView tvAlarm = (TextView)findViewById(R.id.tvAlarm);
+		tvDate = (TextView)findViewById(R.id.tvDate);
+		tvTime = (TextView)findViewById(R.id.tvTime);
+		tvAlarm = (TextView)findViewById(R.id.tvAlarm);
 				
 		etTitle.setText(schTemp.getTitle());
 		etNote.setText(schTemp.getNote());
@@ -304,6 +310,7 @@ public class RcActivity extends Activity {
 		tvAlarm.setText(schTemp.getAlarmSet()?schTemp.getDate2()+"    "+schTemp.getTime2():"no alarm");
 		
 		spType = (Spinner)findViewById(R.id.spType);
+		
 		//Ln16:
 		spType.setAdapter(new BaseAdapter() {
 			@Override
@@ -333,7 +340,8 @@ public class RcActivity extends Activity {
 			}			
 		});
 		
-		spType.setSelection(sel);
+		//spType.setSelection(sel);
+		spType.setSelection(alType.indexOf(schTemp.getType()));
 		
 		// button listener
 		Button bNewType = (Button)findViewById(R.id.bNewType);		
@@ -357,9 +365,80 @@ public class RcActivity extends Activity {
 				schTemp.setNote(etNote.getText().toString());
 				sel=spType.getSelectedItemPosition();
 				
-				//ToDo:
-//				wcSetTimeOrAlarm=WhoCall.SETTING_DATE;
-//				showDialog(DIALOG_SET_DATETIME);
+				wcSetTimeOrAlarm=WhoCall.SETTING_DATE;
+				showDialog(DIALOG_SET_DATETIME);
+			}
+		});
+		
+		Button bSetAlarm=(Button)findViewById(R.id.bSetAlarm);
+		bSetAlarm.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				schTemp.setTitle(etTitle.getText().toString());
+				schTemp.setNote(etNote.getText().toString());
+				sel=spType.getSelectedItemPosition();
+				
+				wcSetTimeOrAlarm=WhoCall.SETTING_ALARM;
+				showDialog(DIALOG_SET_DATETIME);
+			}
+		});
+		
+		//Ln:49
+		Button bDone=(Button)findViewById(R.id.bOk);
+		bDone.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(schTemp.isPassed())
+				{
+					Toast.makeText(RcActivity.this, 
+							"Fail to create: out-of-date", Toast.LENGTH_SHORT).show();
+					return;
+				}
+				
+				if(schTemp.getAlarmSet())
+				{
+					if(schTemp.getDate1().compareTo(schTemp.getDate2())<0
+						|| (schTemp.getTimeSet() 
+							&& schTemp.getDate1().compareTo(schTemp.getDate2())==0 
+							&& schTemp.getTime1().compareTo(schTemp.getTime1())<0))
+					{
+						Toast.makeText(RcActivity.this, 
+								"Fail to create: alarm out-of-date", Toast.LENGTH_SHORT).show();
+						return;
+					}
+				}
+				
+				String title=etTitle.getText().toString().trim();
+				if(title.equals(""))
+				{
+					title="noTitle";
+				}
+				schTemp.setTitle(title);
+				String note=etNote.getText().toString();
+				schTemp.setNote(note);
+				String type=(String)spType.getSelectedItem();
+				schTemp.setType(type);
+				if(wcNewOrEdit==WhoCall.NEW)
+				{
+					insertSchedule(RcActivity.this);
+				}
+				else if(wcNewOrEdit==WhoCall.EDIT)
+				{
+					updateSchedule(RcActivity.this);
+				}
+				
+				gotoMain();
+			}
+		});
+		
+		Button bCancel=(Button)findViewById(R.id.bCancel);
+		bCancel.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				gotoMain();				
 			}
 		});
 	}
@@ -427,5 +506,52 @@ public class RcActivity extends Activity {
 				gotoTypeManager();
 			}
 		});
+	}
+
+	//Ln:33
+	@Override
+	@Deprecated
+	protected Dialog onCreateDialog(int id) {
+		Dialog dialog=null;
+		AlertDialog.Builder b;
+		switch(id)
+		{
+			case DIALOG_SET_SEARCH_RANGE:
+				b = new AlertDialog.Builder(RcActivity.this);
+				b.setTitle("Search Range");
+				b.setItems(new String[]{"Red", "Green", "Blue"}, null);
+				dialogSetRange=b.create();
+				dialog=dialogSetRange;			
+				break;
+			case DIALOG_SET_DATETIME:				
+				Calendar c = Calendar.getInstance();
+				int y = c.get(Calendar.YEAR);
+				int m = c.get(Calendar.MONTH);
+				int d = c.get(Calendar.DAY_OF_MONTH);
+				
+				DatePickerDialog datepicker = new DatePickerDialog(this, 
+						new DatePickerDialog.OnDateSetListener() {
+							
+							@Override
+							public void onDateSet(DatePicker view, int year, int monthOfYear,
+									int dayOfMonth) {
+								if(wcSetTimeOrAlarm==WhoCall.SETTING_DATE)
+								{
+									tvDate.setText(Schedule.toDateString(year, monthOfYear+1, dayOfMonth));
+									schTemp.setDate1(Schedule.toDateString(year, monthOfYear+1, dayOfMonth));
+								}
+								else
+								{
+									tvAlarm.setText(Schedule.toDateString(year, monthOfYear+1, dayOfMonth));
+									schTemp.setDate2(Schedule.toDateString(year, monthOfYear+1, dayOfMonth));									
+								}
+							}
+						}, y, m, d); 
+								
+				dialog=datepicker;			
+				break;							
+		}
+		
+		return dialog;
 	}
 }

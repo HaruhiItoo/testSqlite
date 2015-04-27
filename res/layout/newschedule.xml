@@ -82,20 +82,35 @@
         android:layout_height="wrap_content" >
 
         <TextView
-            android:id="@+id/tvDate"
+            android:id="@+id/lbDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:text="@string/lbDate" />
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/lbDate"
+            android:layout_alignParentTop="true"
+            android:text="----/--/--"  />
         
         <TextView
+            android:id="@+id/lbTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/lbDate"
+            android:layout_below="@id/lbDate"
+            android:text="@string/lbTime" />
+        
+		<TextView
             android:id="@+id/tvTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignRight="@id/tvDate"
-            android:layout_below="@id/tvDate"
-            android:text="@string/lbTime" />
+            android:layout_toRightOf="@id/lbTime"
+            android:layout_below="@id/lbDate"
+            android:text="--:--" />
 
         <Button
             android:id="@+id/bSetDate"
@@ -112,12 +127,18 @@
         android:layout_height="wrap_content" >
         
         <TextView
-            android:id="@+id/tvAlarm"
+            android:id="@+id/lbAlarm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:text="@string/lbAlarm" />
+        <TextView
+            android:id="@+id/tvAlarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/lbAlarm"
+            android:text="no alarm" />
         
         <Button
             android:id="@+id/bSetAlarm"
