@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.example.m04surfaceviewtest.Constant.Layout;
 import com.example.m04surfaceviewtest.Constant.WhoCall;
+import com.example.m04surfaceviewtest.R.layout;
 
 import android.app.Activity;
 import android.database.DataSetObserver;
@@ -26,6 +27,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -35,14 +37,25 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class RcActivity extends Activity {
 	
+	//Main UI
 	private ImageButton bNew;
 	private ImageButton bCheck;
 	private ImageButton bEdit;
 	private ImageButton bDel;
 	private ImageButton bDelAll;
+	
+	//Setting UI
+	private EditText etTitle;
+	private EditText etNote;
+	private Spinner spType;
+	
+	//Type management UI
+	private EditText etNew;
+	
 	private Layout curr;	
 	private WhoCall wcNewOrEdit;
 	private int sel = 0;
@@ -278,8 +291,8 @@ public class RcActivity extends Activity {
 		}
 		
 		// variables...
-		EditText etTitle = (EditText)findViewById(R.id.etTitle);
-		EditText etNote = (EditText)findViewById(R.id.etNote);
+		etTitle = (EditText)findViewById(R.id.etTitle);
+		etNote = (EditText)findViewById(R.id.etNote);
 		TextView tvDate = (TextView)findViewById(R.id.tvDate);
 		TextView tvTime = (TextView)findViewById(R.id.tvTime);
 		TextView tvAlarm = (TextView)findViewById(R.id.tvAlarm);
@@ -290,7 +303,7 @@ public class RcActivity extends Activity {
 		tvTime.setText(schTemp.getTimeSet()?schTemp.getTime1():"no time");
 		tvAlarm.setText(schTemp.getAlarmSet()?schTemp.getDate2()+"    "+schTemp.getTime2():"no alarm");
 		
-		Spinner spType = (Spinner)findViewById(R.id.spType);
+		spType = (Spinner)findViewById(R.id.spType);
 		//Ln16:
 		spType.setAdapter(new BaseAdapter() {
 			@Override
@@ -323,6 +336,96 @@ public class RcActivity extends Activity {
 		spType.setSelection(sel);
 		
 		// button listener
+		Button bNewType = (Button)findViewById(R.id.bNewType);		
+		bNewType.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				schTemp.setTitle(etTitle.getText().toString());
+				schTemp.setNote(etNote.getText().toString());
+				sel=spType.getSelectedItemPosition();
+				gotoTypeManager();				
+			}
+		});
+		
+		Button bSetDate=(Button)findViewById(R.id.bSetDate);
+		bSetDate.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				schTemp.setTitle(etTitle.getText().toString());
+				schTemp.setNote(etNote.getText().toString());
+				sel=spType.getSelectedItemPosition();
+				
+				//ToDo:
+//				wcSetTimeOrAlarm=WhoCall.SETTING_DATE;
+//				showDialog(DIALOG_SET_DATETIME);
+			}
+		});
 	}
 	
+	//Ln:29
+	public void gotoTypeManager()
+	{
+		setContentView(R.layout.typemanager);
+		curr=Layout.TYPE_MANAGER;
+		
+		//variables
+		
+		Button bBack=(Button)findViewById(R.id.bBack);		
+		bBack.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				gotoSetting();
+				
+			}
+		});
+		
+		ListView lvType=(ListView)findViewById(R.id.lvType);
+		lvType.setAdapter(new BaseAdapter() {
+			@Override
+			public int getCount() {
+				return alType.size();
+			}
+			
+			@Override
+			public Object getItem(int position) {
+				return alType.get(position);
+			}
+			
+			@Override
+			public long getItemId(int position) {
+				return 0;
+			}
+			
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				TextView tv = new TextView(RcActivity.this);
+				tv.setText(alType.get(position));
+				tv.setTextSize(17);
+				tv.setTextColor(getResources().getColor(R.color.black));
+				return tv;
+			}			
+		});
+	
+		Button bNew=(Button)findViewById(R.id.bNewType);
+		etNew=(EditText)findViewById(R.id.etNew);
+		bNew.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String newType=etNew.getText().toString();
+				if(newType.equals(""))
+				{
+					Toast.makeText(RcActivity.this, "Type cannot be empty.", 
+							Toast.LENGTH_SHORT).show();
+					return;
+				}
+				
+				insertType(RcActivity.this, newType);
+				gotoTypeManager();
+			}
+		});
+	}
 }

@@ -52,6 +52,9 @@ public class Schedule {
 		this.alarmSet=!(alarmSet==null || alarmSet=="N");
 	}
 
+	//
+	// Getters
+	//	
 	public String getDate1() {		
 		return date1;
 	}
@@ -84,6 +87,16 @@ public class Schedule {
 		return time2;
 	}
 
+	//
+	// Setters
+	//
+	public void setTitle(String title) {
+		this.title=title;		
+	}
+
+	public void setNote(String note) {
+		this.note=note;		
+	}
 
 
 	public static String toDateString(int y, int m, int d) {
@@ -187,6 +200,6 @@ public class Schedule {
 		return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(aDate);		
 	}
 
-	
+
 	
 }

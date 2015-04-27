@@ -12,7 +12,7 @@
     <color name="passedschtext">#999999</color>    
     <color name="passedschgb">#ffc1cc</color>
     <color name="selectedsch">#ace5ee</color>
-    <color name="black">#ffffff</color>
+    <color name="black">#000000</color>
     
     <string name="padding">paddingpaddingpaddingpadding</string>
     <string name="curSchedules">Current Schedules</string>
@@ -28,5 +28,10 @@
     <string name="bAlarm">Set Alarm</string>
     <string name="bOk">OK</string>
     <string name="bCancel">Cancel</string>
+    <string name="lbTypeManager">Type Management</string>
+    <string name="lbNewType">Add New Type</string>
+    <string name="bAdd">Add</string>
+    <string name="lbExistingType">Existing Types</string>
+    <string name="bBack">Back</string>
 	
 </resources>
