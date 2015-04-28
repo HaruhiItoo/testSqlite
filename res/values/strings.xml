@@ -33,5 +33,12 @@
     <string name="bAdd">Add</string>
     <string name="lbExistingType">Existing Types</string>
     <string name="bBack">Back</string>
+    <string name="lbBycondition">條件搜尋</string>
+    <string name="ckTimeRange">限定時間範圍</string>
+    <string name="bChange">Change</string>
+    <string name="lbFrom">"從: "</string>
+    <string name="lbTo">"到: "</string>
+    <string name="lbLimitType">限定類型</string>
+    <string name="ckType">Check all types</string>
 	
 </resources>

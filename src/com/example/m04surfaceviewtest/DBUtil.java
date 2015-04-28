@@ -19,8 +19,9 @@ public class DBUtil {
 	//static String MY_DB_PATH = "/data/data/com.example.m04surfaceviewtest/myDb";
 	static String MY_DB_PATH = Environment.getExternalStorageDirectory().getAbsolutePath()+"/com.example.m04surfaceviewtest/myDb";
 	
-	public static List<String> alType = new ArrayList<String>();	
+	public static ArrayList<String> alType = new ArrayList<String>();	
 	public static List<Schedule> alSch = new ArrayList<Schedule>();		
+	public static List<Boolean> alSelectedType = new ArrayList<Boolean>();
 	//public static Map<Integer, Boolean> alIsSelected = new HashMap<Integer, Boolean>();
 	public static List<Boolean> alIsSelected = new ArrayList<Boolean>();
 	
@@ -137,6 +138,33 @@ public class DBUtil {
 			sld.close();
 		}
 		
+	}
+	
+	//Ln:16
+	public static ArrayList<String> getAllType(RcActivity father)
+	{
+		ArrayList<String> type=new ArrayList<>();
+		type=alType;
+		try
+		{
+			sld=SQLiteDatabase.openDatabase(MY_DB_PATH, null, SQLiteDatabase.OPEN_READONLY);
+			String sql="select distinct type from schedule;";
+			Cursor cursor = sld.rawQuery(sql, new String[]{});
+			while(cursor.moveToNext())
+			{
+				if(!type.contains(cursor.getString(0)))
+				{
+					type.add(cursor.getString(0));
+				}
+			}
+			sld.close();
+			cursor.close();
+		}catch (Exception e)
+		{
+			Toast.makeText(father, "Fail to get types: " + e.toString(), Toast.LENGTH_LONG).show();
+		}
+		
+		return type;
 	}
 	
 	//Ln:19

@@ -20,6 +20,7 @@ import android.os.BaseBundle;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,11 +32,13 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
@@ -50,6 +53,7 @@ public class RcActivity extends Activity {
 	private ImageButton bEdit;
 	private ImageButton bDel;
 	private ImageButton bDelAll;
+	private ImageButton bSearch;
 	
 	//Setting UI
 	private EditText etTitle;
@@ -118,12 +122,13 @@ public class RcActivity extends Activity {
 		curr=Layout.MAIN;
 		sel=0;
 		
-		//variabes:
+		//variables:
 		bNew = (ImageButton)findViewById(R.id.ibAddSch);
 		bCheck = (ImageButton)findViewById(R.id.ibChkSch);
 		bEdit =(ImageButton)findViewById(R.id.ibEditSch);
 		bDel =(ImageButton)findViewById(R.id.ibDelSch);
 		bDelAll =(ImageButton)findViewById(R.id.ibDelAllSch);
+		bSearch = (ImageButton)findViewById(R.id.ibSearchSch);
 		
 		// Ln9: UI settings.
 		bCheck.setEnabled(false);
@@ -142,7 +147,7 @@ public class RcActivity extends Activity {
 			alIsSelected.add(false);
 		}
 		
-		ListView lv = (ListView)findViewById(R.id.lv);
+		final ListView lv = (ListView)findViewById(R.id.lv);
 		lv.setAdapter(new BaseAdapter() {
 			
 			@Override
@@ -227,7 +232,6 @@ public class RcActivity extends Activity {
 		});
 		
 		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {				
@@ -242,6 +246,13 @@ public class RcActivity extends Activity {
 				}
 				
 				alIsSelected.set(position, true);
+				//Note!!! 通知ListView's adapter, 資料有更新.
+				//  在getView(...)會重繪ListView, 在alIsSelected被標示選取的, 會改底色.
+				//((BaseAdapter) lv.getAdapter()).notifyDataSetChanged();
+				lv.invalidateViews();
+				
+				// Diff between notifyDataSetChanged() and invalidateViews():
+				// http://stackoverflow.com/questions/10676720/is-there-any-difference-between-listview-invalidateviews-and-adapter-notify
 			}
 			
 		});		
@@ -283,6 +294,13 @@ public class RcActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				showDialog(DIALOG_ALL_DEL_CONFIRM);				
+			}
+		});
+		
+		bSearch.setOnClickListener(new View.OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				gotoSearch();
 			}
 		});
 	}
@@ -515,6 +533,114 @@ public class RcActivity extends Activity {
 		});
 	}
 
+	//Ln:30
+	public void gotoSearch()
+	{
+		setContentView(R.layout.search);
+		curr=Layout.SEARCH;
+		
+		//variables...
+		TextView tvFrom = (TextView)findViewById(R.id.tvFrom);
+		TextView tvTo = (TextView)findViewById(R.id.tvTo);
+		CheckBox cbDateRange = (CheckBox)findViewById(R.id.cbDateRange);
+		final Button bChange = (Button)findViewById(R.id.bChange);
+		CheckBox cbAllType = (CheckBox)findViewById(R.id.cbAllType);
+		final ListView lv = (ListView)findViewById(R.id.lv);
+		String rangeFrom = "----/--/--";
+		String rangeTo = "----/--/--";		
+		
+		tvFrom.setText(rangeFrom);
+		tvTo.setText(rangeTo);
+		
+		final ArrayList<String> type=getAllType(RcActivity.this);		
+		alSelectedType.clear();
+		for(int i=0;i<type.size();i++)
+		{
+			alSelectedType.add(false);
+		}
+		
+		cbDateRange.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				bChange.setEnabled(isChecked);				
+			}
+		});
+		
+		cbAllType.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				for(int i=0;i<type.size();i++)
+				{
+					alSelectedType.set(i, isChecked);
+				}
+				// Refresh ListView.
+				lv.invalidateViews();
+			}
+		});
+		
+		bChange.setOnClickListener(new View.OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				showDialog(DIALOG_SET_SEARCH_RANGE);				
+			}
+		});
+		
+		//Ln:33
+		lv.setAdapter(new BaseAdapter() {
+			@Override
+			public int getCount() {
+				return type.size();
+			}
+			
+			@Override
+			public Object getItem(int position) {
+				return type.get(position);
+			}
+			
+			@Override
+			public long getItemId(int position) {
+				return 0;
+			}
+			
+			// Note!! 變數"position"設為"final", 因為會給listener使用.
+			@Override
+			public View getView(final int position, View convertView, ViewGroup parent) {
+				LinearLayout ll=new LinearLayout(RcActivity.this);
+				ll.setOrientation(LinearLayout.HORIZONTAL);
+				ll.setGravity(Gravity.CENTER_VERTICAL);
+				
+				LinearLayout llin=new LinearLayout(RcActivity.this);
+				llin.setPadding(20, 0, 0, 0);
+				ll.addView(llin);
+				
+				final CheckBox cb=new CheckBox(RcActivity.this);				
+				//cb.setButtonDrawable(R.drawable.uncheckbox);
+				cb.setButtonDrawable(alSelectedType.get(position)?R.drawable.checkbox:R.drawable.uncheckbox);
+				cb.setChecked(alSelectedType.get(position));
+				cb.setText(type.get(position));
+				cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+						alSelectedType.set(position, isChecked);
+						buttonView.setButtonDrawable(isChecked?R.drawable.checkbox:R.drawable.uncheckbox);
+					}
+				});								
+				llin.addView(cb);
+				
+				TextView tv=new TextView(RcActivity.this);
+				tv.setTag(type.get(position));
+				tv.setTextSize(17);
+				tv.setTextColor(getResources().getColor(R.color.black));
+				ll.addView(tv);
+				return ll;
+			}			
+		});
+		
+		//ToDo:
+		//bOK.click()
+		//bCancel.click()
+	}
+	
 	//Ln:33
 	@Override
 	@Deprecated
@@ -592,7 +718,7 @@ public class RcActivity extends Activity {
 		
 		return dialog;
 	}
-
+	
 	//Ln:38
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -622,8 +748,7 @@ public class RcActivity extends Activity {
 					gotoMain();
 					break;
 				case SEARCH_RESULT:
-					//ToDo:
-					//gotoSearch();
+					gotoSearch();
 					break;
 				case HELP:
 					gotoMain();
