@@ -50,8 +50,8 @@ public class Schedule {
 		this.note=note;
 		this.type=type;
 		// 0 (false) and 1 (true).
-		this.timeSet=!(timeSet==null || timeSet=="0");
-		this.alarmSet=!(alarmSet==null || alarmSet=="0");
+		this.timeSet=(timeSet.equals("1"));
+		this.alarmSet=(alarmSet.equals("1"));
 	}
 
 	//

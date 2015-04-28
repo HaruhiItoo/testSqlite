@@ -278,7 +278,13 @@ public class RcActivity extends Activity {
 				showDialog(DIALOG_SCH_DEL_CONFIRM);				
 			}
 		});
-				
+		
+		bDelAll.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				showDialog(DIALOG_ALL_DEL_CONFIRM);				
+			}
+		});
 	}
 
 	//Ln:28
@@ -567,6 +573,21 @@ public class RcActivity extends Activity {
 				.setNegativeButton("No", null);		
 				dialog=b.create();				
 				break;
+			case DIALOG_ALL_DEL_CONFIRM:
+				b = new AlertDialog.Builder(RcActivity.this);
+				b.setTitle("Delete All Schedule")
+				.setMessage("Do you sure to delete ALL schedules?")
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {			
+						deleteAllSchedule(RcActivity.this);
+						// To refresh the schedule list.
+						gotoMain();
+					}
+				})
+				.setNegativeButton("No", null);		
+				dialog=b.create();	
+				break;
 		}
 		
 		return dialog;
@@ -589,7 +610,7 @@ public class RcActivity extends Activity {
 							System.exit(0);							
 						}
 					})
-					.setNegativeButton("No", null)).create();					
+					.setNegativeButton("No", null)).show();					
 					break;
 				case SETTING:
 					gotoMain();

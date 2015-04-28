@@ -245,6 +245,23 @@ public class DBUtil {
 		}
 	}
 	
+	public static void deleteAllSchedule(RcActivity father)
+	{
+		try
+		{
+			sld=SQLiteDatabase.openDatabase(MY_DB_PATH, null, 
+					SQLiteDatabase.OPEN_READWRITE);
+			String sql="delete from schedule";
+			sld.execSQL(sql);
+			sld.close();
+			Toast.makeText(father, "Success to delete all schedules.", Toast.LENGTH_SHORT).show();
+		}catch(Exception e)
+		{
+			Toast.makeText(father, 
+					"Fail to delete all schedules: " + e.toString(), Toast.LENGTH_LONG).show();
+		}
+	}
+	
 	//Ln:37
 	public static int getSNFromPrefs(Activity father)
 	{
