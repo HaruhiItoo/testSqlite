@@ -212,7 +212,18 @@ public class DBUtil {
 	//Ln:25
 	public static void updateSchedule(RcActivity father)
 	{
-		
+		try
+		{
+			sld=SQLiteDatabase.openDatabase(MY_DB_PATH, null, 
+					SQLiteDatabase.OPEN_READWRITE);
+			String sql=father.schTemp.toUpdateSql(father);
+			sld.execSQL(sql);
+			sld.close();
+		}catch(Exception e)
+		{
+			Toast.makeText(father, 
+					"Fail to update schedule: " + e.toString(), Toast.LENGTH_LONG).show();
+		}
 	}
 	
 	public static int getSNFromPrefs(Activity father)

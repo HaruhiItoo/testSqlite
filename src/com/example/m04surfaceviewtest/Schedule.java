@@ -218,14 +218,37 @@ public class Schedule {
 		return sb.toString();
 	}
 	
-	public String toUpdateSql(Activity father)
-	{
-		int preSn=sn;
+	//Ln42:
+	public String toUpdateSql(RcActivity father)
+	{		
+		Schedule sch = father.schTemp;		
 		StringBuffer sb = new StringBuffer();
-		sb.append("update schedule set sn=");
-		//ToDo:
+		
+		//使用schedule本身的SN, 不需更新SN.
+		//int preSn=sn;
+		//sb.append("update schedule set sn=");
 		//sn=getSNFromPrefs(father);
-		//....
+		sb.append("update schedule set date1='");
+		sb.append(sch.date1);
+		sb.append("',time1='");
+		sb.append(sch.time1);
+		sb.append("',date2='");
+		sb.append(sch.date2);
+		sb.append("',time2='");
+		sb.append(sch.time2);
+		sb.append("',title='");
+		sb.append(sch.title);
+		sb.append("',note='");
+		sb.append(sch.note);
+		sb.append("',type='");
+		sb.append(sch.type);
+		sb.append("',timeSet=");
+		sb.append(sch.timeSet?"1":"0");
+		sb.append(",alarmSet=");
+		sb.append(sch.alarmSet?"1":"0");
+		sb.append(" where sn=");
+		sb.append(sch.sn);
+		
 		Log.d("toUpdateSql", sb.toString());
 		return sb.toString();
 	}
