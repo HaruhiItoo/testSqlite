@@ -13,12 +13,15 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.os.BaseBundle;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -272,12 +275,10 @@ public class RcActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				//showDialog(DIALOG_SCH_DEL_CONFIRM);
-				
+				showDialog(DIALOG_SCH_DEL_CONFIRM);				
 			}
 		});
-		
-		
+				
 	}
 
 	//Ln:28
@@ -517,10 +518,11 @@ public class RcActivity extends Activity {
 		switch(id)
 		{
 			case DIALOG_SET_SEARCH_RANGE:
-				b = new AlertDialog.Builder(RcActivity.this);
-				b.setTitle("Search Range");
-				b.setItems(new String[]{"Red", "Green", "Blue"}, null);
-				dialogSetRange=b.create();
+				// ToDo:
+//				b = new AlertDialog.Builder(RcActivity.this);
+//				b.setTitle("Search Range");
+//				b.setItems(new String[]{"Red", "Green", "Blue"}, null);
+//				dialogSetRange=b.create();
 				dialog=dialogSetRange;			
 				break;
 			case DIALOG_SET_DATETIME:				
@@ -549,9 +551,81 @@ public class RcActivity extends Activity {
 						}, y, m, d); 
 								
 				dialog=datepicker;			
-				break;							
+				break;	
+			case DIALOG_SCH_DEL_CONFIRM:
+				b = new AlertDialog.Builder(RcActivity.this);
+				b.setTitle("Delete Schedule")
+				.setMessage("Do you sure to delete schedule [" + schTemp.getTitle() +"]?")
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {			
+						deleteSchedule(RcActivity.this);
+						// To refresh the schedule list.
+						gotoMain();
+					}
+				})
+				.setNegativeButton("No", null);		
+				dialog=b.create();				
+				break;
 		}
 		
 		return dialog;
+	}
+
+	//Ln:38
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if(keyCode==KeyEvent.KEYCODE_BACK)
+		{
+			switch(curr)
+			{
+				case MAIN:
+					// 建立alertDialog以確認是否離開程式.
+					(new AlertDialog.Builder(this)
+					.setMessage("Exit app?")
+					.setPositiveButton("Yes", new DialogInterface.OnClickListener() {						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							System.exit(0);							
+						}
+					})
+					.setNegativeButton("No", null)).create();					
+					break;
+				case SETTING:
+					gotoMain();
+					break;
+				case TYPE_MANAGER:
+					gotoSetting();
+					break;
+				case SEARCH:
+					gotoMain();
+					break;
+				case SEARCH_RESULT:
+					//ToDo:
+					//gotoSearch();
+					break;
+				case HELP:
+					gotoMain();
+					break;
+				case ABOUT:
+					gotoMain();
+					break;			
+			} //End: switch
+			return true;
+		}
+		
+		return false;
+	}
+	
+	//Ln:40
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		return super.onMenuItemSelected(featureId, item);
+	}
+
+	//Ln:49
+	public String[] splitYMD(String ss)
+	{
+		return ss.split("/");
 	}
 }

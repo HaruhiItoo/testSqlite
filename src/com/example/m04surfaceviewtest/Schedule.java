@@ -57,6 +57,9 @@ public class Schedule {
 	//
 	// Getters
 	//	
+	public int getSn() {
+		return sn;
+	}
 	public String getDate1() {		
 		return date1;
 	}
@@ -262,8 +265,6 @@ public class Schedule {
 		Date aDate= new Date();		
 		return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(aDate);		
 	}
-
-
 
 	
 }

@@ -226,6 +226,26 @@ public class DBUtil {
 		}
 	}
 	
+	//Ln:28
+	public static void deleteSchedule(RcActivity father)
+	{
+		try
+		{
+			sld=SQLiteDatabase.openDatabase(MY_DB_PATH, null, 
+					SQLiteDatabase.OPEN_READWRITE);
+			int sn=father.schTemp.getSn();
+			String sql="delete from schedule where sn="+sn;
+			sld.execSQL(sql);
+			sld.close();
+			Toast.makeText(father, "Success to delete.", Toast.LENGTH_SHORT).show();
+		}catch(Exception e)
+		{
+			Toast.makeText(father, 
+					"Fail to delete schedule: " + e.toString(), Toast.LENGTH_LONG).show();
+		}
+	}
+	
+	//Ln:37
 	public static int getSNFromPrefs(Activity father)
 	{
 		SharedPreferences sp = father.getSharedPreferences("SN", Context.MODE_PRIVATE);
