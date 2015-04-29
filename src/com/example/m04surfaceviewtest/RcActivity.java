@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -66,15 +67,20 @@ public class RcActivity extends Activity {
 	//Type management UI
 	private EditText etNew;
 	
+	//Search UI
+	private TextView tvFrom;
+	private TextView tvTo;
+	
 	private Layout curr;	
 	private WhoCall wcNewOrEdit;
-	private WhoCall wcSetTimeOrAlarm;
+	private WhoCall wcSetDate;
 	private Dialog dialogSetRange;
 	private int sel = 0;
 	
 	public Schedule schTemp;
-
 	public String[] defaultType = {"Private", "Work", "ToBuy"};
+	public String rangeFrom;
+	public String rangeTo;	
 	
 	
 	// Override the method of handling messages.
@@ -90,8 +96,7 @@ public class RcActivity extends Activity {
 			}
 		}
 		
-	};	
-	
+	};		
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {		
@@ -390,7 +395,7 @@ public class RcActivity extends Activity {
 				schTemp.setNote(etNote.getText().toString());
 				sel=spType.getSelectedItemPosition();
 				
-				wcSetTimeOrAlarm=WhoCall.SETTING_DATE;
+				wcSetDate=WhoCall.SETTING_DATE;
 				showDialog(DIALOG_SET_DATETIME);
 			}
 		});
@@ -404,7 +409,7 @@ public class RcActivity extends Activity {
 				schTemp.setNote(etNote.getText().toString());
 				sel=spType.getSelectedItemPosition();
 				
-				wcSetTimeOrAlarm=WhoCall.SETTING_ALARM;
+				wcSetDate=WhoCall.SETTING_ALARM;
 				showDialog(DIALOG_SET_DATETIME);
 			}
 		});
@@ -540,10 +545,11 @@ public class RcActivity extends Activity {
 		curr=Layout.SEARCH;
 		
 		//variables...
-		TextView tvFrom = (TextView)findViewById(R.id.tvFrom);
-		TextView tvTo = (TextView)findViewById(R.id.tvTo);
+		tvFrom = (TextView)findViewById(R.id.tvFrom);
+		tvTo = (TextView)findViewById(R.id.tvTo);
 		CheckBox cbDateRange = (CheckBox)findViewById(R.id.cbDateRange);
-		final Button bChange = (Button)findViewById(R.id.bChange);
+		final Button bChangeFrom = (Button)findViewById(R.id.bChangeFrom);
+		final Button bChangeTo = (Button)findViewById(R.id.bChangeTo);
 		CheckBox cbAllType = (CheckBox)findViewById(R.id.cbAllType);
 		final ListView lv = (ListView)findViewById(R.id.lv);
 		String rangeFrom = "----/--/--";
@@ -562,9 +568,12 @@ public class RcActivity extends Activity {
 		cbDateRange.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {			
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				bChange.setEnabled(isChecked);				
+				bChangeFrom.setEnabled(isChecked);				
+				bChangeTo.setEnabled(isChecked);
 			}
 		});
+		bChangeFrom.setEnabled(false);
+		bChangeTo.setEnabled(false);
 		
 		cbAllType.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
@@ -578,9 +587,18 @@ public class RcActivity extends Activity {
 			}
 		});
 		
-		bChange.setOnClickListener(new View.OnClickListener() {			
+		bChangeFrom.setOnClickListener(new View.OnClickListener() {			
 			@Override
 			public void onClick(View v) {
+				wcSetDate = WhoCall.SETTING_RANGE_FROM;
+				showDialog(DIALOG_SET_SEARCH_RANGE);				
+			}
+		});
+		
+		bChangeTo.setOnClickListener(new View.OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				wcSetDate = WhoCall.SETTING_RANGE_TO;
 				showDialog(DIALOG_SET_SEARCH_RANGE);				
 			}
 		});
@@ -636,9 +654,42 @@ public class RcActivity extends Activity {
 			}			
 		});
 		
-		//ToDo:
-		//bOK.click()
-		//bCancel.click()
+		//Ln:36
+		Button bSearch = (Button)findViewById(R.id.bSearch);
+		bSearch.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// 檢查至少一個type被選取.
+				boolean tmp=false;
+				for(boolean b:alSelectedType)
+				{
+					tmp=tmp|b;
+				}
+				
+				if(tmp==false)
+				{
+					Toast.makeText(RcActivity.this, "Please select at least one type.", Toast.LENGTH_SHORT).show();
+					return;
+				}
+				
+				searchSchedule(RcActivity.this);
+				gotoSearchResult();
+			}
+		});
+		
+		Button bCancel = (Button)findViewById(R.id.bCancel);
+		bCancel.setOnClickListener(new View.OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				gotoMain();				
+			}
+		});
+	}
+	
+	//Ln:31
+	public void gotoSearchResult()
+	{
+		//setContentView(R.layout.searchresult);
 	}
 	
 	//Ln:33
@@ -648,15 +699,8 @@ public class RcActivity extends Activity {
 		Dialog dialog=null;
 		AlertDialog.Builder b;
 		switch(id)
-		{
+		{		
 			case DIALOG_SET_SEARCH_RANGE:
-				// ToDo:
-//				b = new AlertDialog.Builder(RcActivity.this);
-//				b.setTitle("Search Range");
-//				b.setItems(new String[]{"Red", "Green", "Blue"}, null);
-//				dialogSetRange=b.create();
-				dialog=dialogSetRange;			
-				break;
 			case DIALOG_SET_DATETIME:				
 				Calendar c = Calendar.getInstance();
 				int y = c.get(Calendar.YEAR);
@@ -664,20 +708,29 @@ public class RcActivity extends Activity {
 				int d = c.get(Calendar.DAY_OF_MONTH);
 				
 				DatePickerDialog datepicker = new DatePickerDialog(this, 
-						new DatePickerDialog.OnDateSetListener() {
-							
+						new DatePickerDialog.OnDateSetListener() {							
 							@Override
 							public void onDateSet(DatePicker view, int year, int monthOfYear,
 									int dayOfMonth) {
-								if(wcSetTimeOrAlarm==WhoCall.SETTING_DATE)
+								if(wcSetDate==WhoCall.SETTING_DATE)
 								{
 									tvDate.setText(Schedule.toDateString(year, monthOfYear+1, dayOfMonth));
 									schTemp.setDate1(Schedule.toDateString(year, monthOfYear+1, dayOfMonth));
 								}
-								else
+								else if(wcSetDate==WhoCall.SETTING_ALARM)
 								{
 									tvAlarm.setText(Schedule.toDateString(year, monthOfYear+1, dayOfMonth));
 									schTemp.setDate2(Schedule.toDateString(year, monthOfYear+1, dayOfMonth));									
+								}
+								else if(wcSetDate==WhoCall.SETTING_RANGE_FROM)
+								{
+									tvFrom.setText(Schedule.toDateString(year, monthOfYear+1, dayOfMonth));
+									rangeFrom=Schedule.toDateString(year, monthOfYear+1, dayOfMonth);
+								}
+								else if(wcSetDate==WhoCall.SETTING_RANGE_TO)
+								{
+									tvTo.setText(Schedule.toDateString(year, monthOfYear+1, dayOfMonth));
+									rangeTo=Schedule.toDateString(year, monthOfYear+1, dayOfMonth);
 								}
 							}
 						}, y, m, d); 

@@ -22,18 +22,28 @@
         android:text="@string/ckTimeRange" />
 
     <Button
-        android:id="@+id/bChange"
+        android:id="@+id/bChangeFrom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/checkBox1"
+        android:layout_alignBaseline="@+id/tvFrom"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:text="@string/bChange" />
+        android:text="@string/bChangeFrom" />
+    
+    <Button
+        android:id="@+id/bChangeTo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tvTo"
+        android:layout_alignLeft="@+id/bChangeFrom"
+        android:layout_below="@id/bChangeFrom"
+        android:text="@string/bChangeTo" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:layout_below="@id/cbDateRange"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="35dp"
@@ -43,6 +53,7 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:layout_below="@id/textView2"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="35dp"
@@ -52,6 +63,7 @@
         android:id="@+id/tvFrom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="12dp"
         android:layout_below="@+id/cbDateRange"
         android:layout_toRightOf="@+id/textView2"
         android:text="--/--/--" />
@@ -60,9 +72,12 @@
         android:id="@+id/tvTo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="12dp"
         android:layout_alignLeft="@+id/tvFrom"
         android:layout_below="@+id/tvFrom"
         android:text="--/--/--" />
+
+ 
 
     </RelativeLayout>
 
@@ -97,15 +112,15 @@
         android:layout_height="wrap_content" >
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/bSearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:text="@string/bOk" />
+            android:text="@string/bSearch" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/bCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

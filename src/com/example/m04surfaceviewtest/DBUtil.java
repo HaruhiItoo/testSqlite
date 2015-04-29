@@ -143,7 +143,7 @@ public class DBUtil {
 	//Ln:16
 	public static ArrayList<String> getAllType(RcActivity father)
 	{
-		ArrayList<String> type=new ArrayList<>();
+		ArrayList<String> type=new ArrayList<String>();
 		type=alType;
 		try
 		{
@@ -192,22 +192,11 @@ public class DBUtil {
 			Cursor cursor =sld.query("schedule", null, null, null, null, null, 
 					"date1 desc,time1 desc");
 			while(cursor.moveToNext())
-			{
-				int sn = cursor.getInt(0);
-				String date1=cursor.getString(1);
-				String time1=cursor.getString(2);
-				String date2=cursor.getString(3);
-				String time2=cursor.getString(4);
-				String title=cursor.getString(5);
-				String note=cursor.getString(6);
-				String type=cursor.getString(7);
-				String timeSet=cursor.getString(8);
-				String alarmSet=cursor.getString(9);
-				Schedule schTemp=new Schedule(sn, date1, time1, date2, time2, title, 
-						note, type, timeSet, alarmSet);
+			{				
+				Schedule schTemp = createSchedule(cursor);
 				alSch.add(schTemp);
-				Log.d("schdata", ""+cursor.getPosition()+":sn="+sn+":"
-				+date1+","+time1+","+date2+","+timeSet);
+				Log.d("schdata", ""+cursor.getPosition()+":sn="+schTemp.getSn()+":"
+						+schTemp.getDate1()+","+schTemp.getTime1()+","+schTemp.getDate2()+","+schTemp.getTimeSet());
 			}
 			
 			sld.close();
@@ -218,7 +207,7 @@ public class DBUtil {
 			Toast.makeText(father, "Fail to load schedule: "+e.toString(), 
 					Toast.LENGTH_LONG).show();
 		}
-	}
+	}	
 	
 	//Ln:22
 	public static void insertSchedule(RcActivity father)
@@ -290,6 +279,48 @@ public class DBUtil {
 		}
 	}
 	
+	//Ln:34
+	public static void searchSchedule(RcActivity father)
+	{
+		try {
+			sld=SQLiteDatabase.openDatabase(MY_DB_PATH, null, SQLiteDatabase.OPEN_READONLY);
+			String[] args=new String[2];
+			args[0] = father.rangeFrom;
+			args[1] = father.rangeTo;
+			String sql="select * from schedule where date1 between ? and ?";
+			
+			StringBuffer sbtmp=new StringBuffer();
+			sbtmp.append(" and (type=");
+			for(int i=0;i<alSelectedType.size();i++)
+			{
+				if(alSelectedType.get(i))
+				{
+					sbtmp.append("'");
+					sbtmp.append(alType.get(i));
+					sbtmp.append("' or type=");
+				}
+			}
+			String strSelectedType=sbtmp.toString();
+			strSelectedType=strSelectedType.substring(0, strSelectedType.length()-9);
+			sql+=strSelectedType + ")";
+			
+			Cursor cursor=sld.rawQuery(sql, args);
+			Toast.makeText(father, "Find " + cursor.getCount() + " schedule(s).", Toast.LENGTH_SHORT).show();
+			alSch.clear();
+			
+			while(cursor.moveToNext())
+			{
+				alSch.add(createSchedule(cursor));
+			}
+			
+			sld.close();
+			cursor.close();
+			
+		} catch (Exception e) {
+			Toast.makeText(father, "Fail to search: " + e.toString(), Toast.LENGTH_LONG).show();
+		}
+	}
+	
 	//Ln:37
 	public static int getSNFromPrefs(Activity father)
 	{
@@ -304,4 +335,20 @@ public class DBUtil {
 		return sn;
 	}
 
+	public static Schedule createSchedule(Cursor cursor)
+	{
+		int sn = cursor.getInt(0);
+		String date1=cursor.getString(1);
+		String time1=cursor.getString(2);
+		String date2=cursor.getString(3);
+		String time2=cursor.getString(4);
+		String title=cursor.getString(5);
+		String note=cursor.getString(6);
+		String type=cursor.getString(7);
+		String timeSet=cursor.getString(8);
+		String alarmSet=cursor.getString(9);
+		return new Schedule(sn, date1, time1, date2, time2, title, 
+				note, type, timeSet, alarmSet);		
+	}
+	
 }
