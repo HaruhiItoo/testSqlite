@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/ibsearchresultDel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"  
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"          
+            android:src="@drawable/deletesch" />
+
+        <ImageButton
+            android:id="@+id/ibsearchresultCheck"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"           
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"    
+            android:src="@drawable/checksch" />
+
+        <ImageButton
+            android:id="@+id/ibsearchresultEdit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"    
+            android:src="@drawable/editsch" />
+
+        <ImageButton
+            android:id="@+id/ibsearchresultBack"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"    
+            android:src="@drawable/back" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/selectedsch"
+        android:text="@string/lbSearchResult" />
+
+    <ListView
+        android:id="@+id/lvsearchresultSchedule"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </ListView>
+
+</LinearLayout>

@@ -45,7 +45,6 @@ public class DrawTest extends SurfaceView implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		// TODO Auto-generated method stub
 		
 	}
 }

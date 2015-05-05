@@ -74,7 +74,6 @@ public class RcActivity extends Activity {
 	private Layout curr;	
 	private WhoCall wcNewOrEdit;
 	private WhoCall wcSetDate;
-	private Dialog dialogSetRange;
 	private int sel = 0;
 	
 	public Schedule schTemp;
@@ -689,7 +688,85 @@ public class RcActivity extends Activity {
 	//Ln:31
 	public void gotoSearchResult()
 	{
-		//setContentView(R.layout.searchresult);
+		setContentView(R.layout.searchresult);
+		curr=Layout.SEARCH_RESULT;
+		sel=0;
+		final ImageButton bCheck=(ImageButton)findViewById(R.id.ibsearchresultCheck);
+		final ImageButton bEdit=(ImageButton)findViewById(R.id.ibsearchresultEdit);
+		final ImageButton bDel=(ImageButton)findViewById(R.id.ibsearchresultDel);
+		
+		ImageButton bBack=(ImageButton)findViewById(R.id.ibsearchresultBack);
+		ListView lv=(ListView)findViewById(R.id.lvsearchresultSchedule); 
+		
+		bCheck.setEnabled(false);
+		bEdit.setEnabled(false);
+		bDel.setEnabled(false);
+		
+		//Ln:13
+		lv.setAdapter(new BaseAdapter(){
+
+			@Override
+			public int getCount() {				
+				return alSch.size();
+			}
+
+			@Override
+			public Object getItem(int position) {
+				return alSch.get(position);
+			}
+
+			@Override
+			public long getItemId(int position) {
+				return 0;
+			}
+
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				//ToDo:
+				return null;
+			}
+			
+		});
+		
+		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				bCheck.setEnabled(true);
+				bEdit.setEnabled(true);
+				bDel.setEnabled(true);
+				schTemp=alSch.get(position);
+			}			
+		});
+		
+		bEdit.setOnClickListener(new View.OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				wcNewOrEdit=WhoCall.EDIT;
+				gotoSetting();
+			}
+		});
+		
+		bDel.setOnClickListener(new View.OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				showDialog(DIALOG_SCH_DEL_CONFIRM);				
+			}
+		});
+		
+		bCheck.setOnClickListener(new View.OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				showDialog(DIALOG_CHECK);			
+			}
+		});
+		
+		bBack.setOnClickListener(new View.OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				gotoSearch();			
+			}
+		});
 	}
 	
 	//Ln:33

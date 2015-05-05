@@ -42,5 +42,6 @@
     <string name="lbLimitType">限定類型</string>
     <string name="ckType">Check all types</string>
     <string name="bSearch">Search</string>
+    <string name="lbSearchResult">Search Results</string>
 	
 </resources>
