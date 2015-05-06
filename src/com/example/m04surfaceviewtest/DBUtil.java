@@ -287,10 +287,16 @@ public class DBUtil {
 			String[] args=new String[2];
 			args[0] = father.rangeFrom;
 			args[1] = father.rangeTo;
-			String sql="select * from schedule where date1 between ? and ?";
+			//String sql="select * from schedule where date1 between ? and ?";
+			String sql="select * from schedule where ";
+			// Only if date range is set, then add the date condition.
+			if(args[0]!=null && args[1]!=null)
+			{
+				sql+=" date1 between ? and ? and ";
+			}
 			
 			StringBuffer sbtmp=new StringBuffer();
-			sbtmp.append(" and (type=");
+			sbtmp.append(" (type=");
 			for(int i=0;i<alSelectedType.size();i++)
 			{
 				if(alSelectedType.get(i))
@@ -304,7 +310,15 @@ public class DBUtil {
 			strSelectedType=strSelectedType.substring(0, strSelectedType.length()-9);
 			sql+=strSelectedType + ")";
 			
-			Cursor cursor=sld.rawQuery(sql, args);
+			Cursor cursor;
+			if(args[0]!=null && args[1]!=null)
+			{
+				cursor=sld.rawQuery(sql, args);
+			}
+			else
+			{
+				cursor=sld.rawQuery(sql, null);
+			}
 			Toast.makeText(father, "Find " + cursor.getCount() + " schedule(s).", Toast.LENGTH_SHORT).show();
 			alSch.clear();
 			

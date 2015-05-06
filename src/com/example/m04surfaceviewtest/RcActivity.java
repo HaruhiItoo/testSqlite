@@ -307,6 +307,13 @@ public class RcActivity extends Activity {
 				gotoSearch();
 			}
 		});
+		
+		bCheck.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				showDialog(DIALOG_CHECK);				
+			}
+		});
 	}
 
 	//Ln:28
@@ -696,7 +703,7 @@ public class RcActivity extends Activity {
 		final ImageButton bDel=(ImageButton)findViewById(R.id.ibsearchresultDel);
 		
 		ImageButton bBack=(ImageButton)findViewById(R.id.ibsearchresultBack);
-		ListView lv=(ListView)findViewById(R.id.lvsearchresultSchedule); 
+		final ListView lv=(ListView)findViewById(R.id.lvsearchresultSchedule); 
 		
 		bCheck.setEnabled(false);
 		bEdit.setEnabled(false);
@@ -722,8 +729,75 @@ public class RcActivity extends Activity {
 
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
-				//ToDo:
-				return null;
+				//
+				//Use codes in "gotoMain() -> new BaseAdapter()"
+				//
+				LinearLayout ll = new LinearLayout(RcActivity.this);
+				ll.setOrientation(LinearLayout.VERTICAL);
+				ll.setPadding(10, 10, 10, 10);
+				LinearLayout llUp = new LinearLayout(RcActivity.this);
+				llUp.setOrientation(LinearLayout.HORIZONTAL);				
+				LinearLayout llDown = new LinearLayout(RcActivity.this);
+				llDown.setOrientation(LinearLayout.HORIZONTAL);
+				
+				TextView atvDate = new TextView(RcActivity.this);				
+				atvDate.setText(alSch.get(position).getDate1()+"    ");
+				atvDate.setTextSize(17);
+				atvDate.setTextColor(Color.parseColor("#129666"));
+				llUp.addView(atvDate);
+				
+				tvTime = new TextView(RcActivity.this);
+				tvTime.setText(alSch.get(position).timeForListView());
+				tvTime.setTextSize(17);
+				tvTime.setTextColor(Color.parseColor("#925301"));
+				llUp.addView(tvTime);
+				
+				// Customize color for out-of-date schedule.
+				//Ln:17
+				if(alSch.get(position).isPassed())
+				{				
+					//atvDate.setTextColor(getResources().getColor(R.color.passedschtext));
+					//tvTime.setTextColor(getResources().getColor(R.color.passedschtext));
+					//ll.setBackgroundColor(getResources().getColor(R.color.passedschgb));
+					atvDate.setTextColor(Color.parseColor("#292929"));
+					tvTime.setTextColor(Color.parseColor("#292929"));
+					ll.setBackgroundColor(Color.parseColor("#818175"));
+				}
+							
+				// Set selected item's bg color.
+				// Note!!! Must in "setOnItemClickListener()" to update selected items.
+				if(alIsSelected.size()>0 && alIsSelected.get(position))
+				{
+					ll.setBackgroundColor(getResources().getColor(R.color.selectedsch));
+				}
+				
+				// Ln22: Draw alarm.
+				if(alSch.get(position).getAlarmSet())
+				{
+					ImageView iv = new ImageView(RcActivity.this);
+					iv.setImageDrawable(getResources().getDrawable(R.drawable.alarm));
+					iv.setLayoutParams(new LayoutParams(20, 20));
+					llUp.addView(iv);
+				}
+				
+				// Ln28: Show schedule text.
+				TextView tvType = new TextView(RcActivity.this);
+				tvType.setText(alSch.get(position).typeForListView());
+				tvType.setTextSize(17);
+				tvType.setTextColor(Color.parseColor("#b20000"));				
+				llDown.addView(tvType);
+						
+				// Ln33: Show title.
+				TextView tvTitle = new TextView(RcActivity.this);
+				tvTitle.setText(alSch.get(position).getTitle());				
+				tvTitle.setTextSize(17);
+				tvTitle.setTextColor(Color.parseColor("#000000"));	
+				llDown.addView(tvTitle);
+				
+				ll.addView(llUp);
+				ll.addView(llDown);
+				
+				return ll;
 			}
 			
 		});
@@ -736,6 +810,21 @@ public class RcActivity extends Activity {
 				bEdit.setEnabled(true);
 				bDel.setEnabled(true);
 				schTemp=alSch.get(position);
+				
+				// Clear all selection, then set the selected item to true.
+				for(int i=0; i<alIsSelected.size(); i++)
+				{
+					alIsSelected.set(i, false);
+				}
+				
+				alIsSelected.set(position, true);
+				//Note!!! 通知ListView's adapter, 資料有更新.
+				//  在getView(...)會重繪ListView, 在alIsSelected被標示選取的, 會改底色.
+				//((BaseAdapter) lv.getAdapter()).notifyDataSetChanged();
+				lv.invalidateViews();
+				
+				// Diff between notifyDataSetChanged() and invalidateViews():
+				// http://stackoverflow.com/questions/10676720/is-there-any-difference-between-listview-invalidateviews-and-adapter-notify			
 			}			
 		});
 		
@@ -847,6 +936,20 @@ public class RcActivity extends Activity {
 		}
 		
 		return dialog;
+	}
+	
+	@Override
+	@Deprecated
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		// After onCreateDialog(), the dialog will be cached.
+		// Here is to change attributes of the cached dialog. 
+		switch(id)
+		{
+			case DIALOG_SCH_DEL_CONFIRM:
+				((AlertDialog)dialog)
+				.setMessage("Do you sure to delete schedule [" + schTemp.getTitle() +"]?");						
+				break;
+		}
 	}
 	
 	//Ln:38
