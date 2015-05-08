@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.example.m04surfaceviewtest.Constant.Layout;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -23,6 +25,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -858,6 +861,23 @@ public class RcActivity extends Activity {
 		});
 	}
 	
+	//Ln:32
+	public void gotoHelp()
+	{
+		getWindow().setFlags(
+				WindowManager.LayoutParams.FLAG_FULLSCREEN, 
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		setContentView(R.layout.help);
+		curr=Layout.HELP;
+		Button bBack=(Button)this.findViewById(R.id.bhelpback);
+		bBack.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				gotoMain();
+			}
+		});
+	}
+	
 	//Ln:33
 	@Override
 	@Deprecated
@@ -998,8 +1018,57 @@ public class RcActivity extends Activity {
 	
 	//Ln:40
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		if(curr!=Layout.MAIN)
+		{
+			return false;
+		}
+		
+		MenuItem miHelp=menu.add(1, MENU_HELP, 0, "Help");
+		miHelp.setIcon(R.drawable.help);
+		miHelp.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {			
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				setContentView(R.layout.help);
+				curr=Layout.HELP;
+				return true;
+			}
+		});
+		
+		MenuItem miAbout = menu.add(1, MENU_ABOUT, 0, "About");
+		miAbout.setIcon(R.drawable.about);
+		miAbout.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {			
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				setContentView(R.layout.about);
+				curr=Layout.ABOUT;
+				return true;
+			}
+		});
+		
+		return true;
+	}
+	
+	//Ln:43
+	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		return super.onMenuItemSelected(featureId, item);
+	}
+	
+	//Ln:46
+	public int getMaxDayOfMonth(int year, int month)
+	{
+		int day=0;
+		boolean run=false;
+		if(year%400==0 || year%4==0 &&year%100==0)
+		{
+			return true;
+		}
+		
+		if(month==4 || month==6|| month==9||month==11)
+		{
+			
+		}
 	}
 
 	//Ln:49
