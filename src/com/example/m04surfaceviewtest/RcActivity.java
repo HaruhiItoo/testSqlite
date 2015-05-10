@@ -1,6 +1,6 @@
 package com.example.m04surfaceviewtest;
 
-// Note!! To impoart DBUtil's static methods.
+// Note!! To import DBUtil's static methods.
 import static com.example.m04surfaceviewtest.DBUtil.*;
 import static com.example.m04surfaceviewtest.Constant.*;
 
@@ -23,6 +23,7 @@ import android.os.BaseBundle;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -102,18 +103,21 @@ public class RcActivity extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {		
-		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);	
 		
-		goToWelcomeView();
+		//requestWindowFeature(Window.FEATURE_NO_TITLE);
+		super.onCreate(savedInstanceState);
+				
+		//goToWelcomeView();
+		gotoMain();
 	}
 
 	private void goToWelcomeView() {
-		MySurfaceView mview = new MySurfaceView(this);
+		
 		getWindow().setFlags(
 				WindowManager.LayoutParams.FLAG_FULLSCREEN, 
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);		
 		
+		MySurfaceView mview = new MySurfaceView(this);
 		setContentView(mview);
 		curr=Layout.WELCOME_VIEW;
 		
@@ -122,10 +126,18 @@ public class RcActivity extends Activity {
 	//Ln:27
 	public void gotoMain() {
 		
-		getWindow().setFlags(
-				WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, 
-				WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-		setContentView(R.layout.main);		
+//		getWindow().setFlags(
+//				WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, 
+//				WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+		
+		try
+		{
+		setContentView(R.layout.main);
+		}
+		catch(Exception e)
+		{
+			Log.e("main:setContentView", e.toString());
+		}
 		curr=Layout.MAIN;
 		sel=0;
 		
@@ -1019,7 +1031,12 @@ public class RcActivity extends Activity {
 	//Ln:40
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		if(curr!=Layout.MAIN)
+		//[Fix] Add menu items if action bar exists.
+//		if(curr!=Layout.MAIN)
+//		{
+//			return false;
+//		}
+		if(getActionBar() == null)
 		{
 			return false;
 		}
@@ -1046,7 +1063,8 @@ public class RcActivity extends Activity {
 			}
 		});
 		
-		return true;
+		//return true;
+		return super.onCreateOptionsMenu(menu);
 	}
 	
 	//Ln:43
@@ -1059,16 +1077,28 @@ public class RcActivity extends Activity {
 	public int getMaxDayOfMonth(int year, int month)
 	{
 		int day=0;
-		boolean run=false;
-		if(year%400==0 || year%4==0 &&year%100==0)
+		boolean isLeap=false;
+		if(year%400==0 || 
+			((year%4==0) && (year%100!=0)))
 		{
-			return true;
+			isLeap = true;
 		}
 		
 		if(month==4 || month==6|| month==9||month==11)
 		{
-			
+			day=30;
 		}
+		else if (month==2)
+		{
+			if(isLeap)
+				day=29;
+			else
+				day=28;
+		}
+		else
+			day=31;
+		
+		return day;
 	}
 
 	//Ln:49

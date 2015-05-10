@@ -16,10 +16,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
-public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback{
+public class MySurfaceView2 extends SurfaceView implements SurfaceHolder.Callback{
 
-
-	private RcActivity mActivity;
 	private Paint paint;
 	private int currentAlpha = 0;
 	private int screenWidth;
@@ -29,12 +27,12 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	private int currentY;
 	private List<Bitmap> logos;
 	private int sleepSpan;
+	private MySplash mSplash; 
 
 
-	public MySurfaceView(RcActivity activity){
-		super(activity);	
-	
-		mActivity = activity;	
+	public MySurfaceView2(MySplash splash){
+		super(splash);	
+		mSplash = splash;
 		getHolder().addCallback(this);
 		
 		logos = new ArrayList<Bitmap>();
@@ -42,7 +40,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		logos.add(BitmapFactory.decodeResource(getResources(), R.drawable.logo2));
 		
 		// Get display size.
-		WindowManager wm = (WindowManager)activity.getSystemService(Context.WINDOW_SERVICE);
+		WindowManager wm = (WindowManager)splash.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
 		Point size = new Point();
 		display.getSize(size);
@@ -90,7 +88,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 						
 						// To draw on canvas.
 						// Get surface holder.
-						SurfaceHolder holder = MySurfaceView.this.getHolder();
+						SurfaceHolder holder = MySurfaceView2.this.getHolder();
 						// 1. Lock canvas.
 						Canvas canvas = holder.lockCanvas();
 						try
@@ -124,8 +122,10 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 					} // End: for-loop
 				}// End: for bitmaps
 				
+				//[Modify] Separate splash into another activity.
 				// Send message to RcActivity. It will go to Main UI.
-				mActivity.hd.sendEmptyMessage(0);
+				//mActivity.hd.sendEmptyMessage(0);				
+				mSplash.hd.sendEmptyMessage(0);
 				
 			}// End: method "run".
 		}.start();
