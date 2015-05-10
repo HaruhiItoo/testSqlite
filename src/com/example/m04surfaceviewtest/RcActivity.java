@@ -132,7 +132,7 @@ public class RcActivity extends Activity {
 		
 		try
 		{
-		setContentView(R.layout.main);
+			setContentView(R.layout.main);
 		}
 		catch(Exception e)
 		{
